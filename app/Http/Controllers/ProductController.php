@@ -1,23 +1,38 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class ProductController extends Controller
 {
     public function index()
-    { return Product::all(); }
+    {
+        return Product::all();
+    }
     public function show(Product $product)
-    { return $product; }
+    {
+        return $product;
+    }
     public function store(Request $request)
-    { return response()->json($product, 201); }
-    public function update(Request $request, Product $article)
-    { $product = Product::findOrFail($id);
+    {
+        $product = Product::create($request->all());
+        return response()->json($product, 201);
+    }
+    public function update(Request $request, Product $product)
+    {
         $product->update($request->all());
-        return response()->json($product, 200); }
-    public function delete(Request $request, $id)
-    { $product = Product::findOrFail($id);
-        $product->delete(); return 204; }
+        return response()->json($product, 200);
+    }
+    public function delete(Product $product)
+    {
+        $product->status = 'deleted';
+
+        $product->save();
+        return response()->json(null, 204);
+    }
+
 }

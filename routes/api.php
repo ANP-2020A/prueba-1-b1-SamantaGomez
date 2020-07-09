@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,50 +12,30 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+/*Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
+});*/
 
-//Route::middleware('auth:api')->get('/user', function (Request $request) {
-  //  return $request->user();
-//});
+Route::post('register', 'UserController@register');
+Route::post('login', 'UserController@authenticate');
+Route::get('products', 'ProductsController@index');
+Route::get('products/{product}', 'ProductsController@show');
 
-Use App\Product;
-Route::get('articles', function()
-{
-    return Product::all();
-});
-Route::get('articles/{id}', function($id)
-{
-    return Product::find($id); });
-Route::post('articles', function(Request $request)
-{
-    return Product::create($request->all());
-});
-Route::put('articles/{id}', function(Request $request, $id)
-{
-    $article = Product::findOrFail($id);
-    $article->update($request->all()); return $article;
-});
-Route::delete('articles/{id}', function($id) {
-    Product::find($id)->delete(); return 204;
-});
 
-Use App\Customer;
-Route::get('articles', function()
-{
-    return Customer::all();
-});
-Route::get('articles/{id}', function($id)
-{
-    return Customer::find($id); });
-Route::post('articles', function(Request $request)
-{
-    return Customer::create($request->all());
-});
-Route::put('articles/{id}', function(Request $request, $id)
-{
-    $article = Customer::findOrFail($id);
-    $article->update($request->all()); return $article;
-});
-Route::delete('articles/{id}', function($id) {
-    Customer::find($id)->delete(); return 204;
-});
 
+
+
+Route::group(['middleware' => ['jwt.verify']], function() {
+    Route::get('user', 'UserController@getAuthenticatedUser');
+
+    Route::post('products', 'ProductsController@store');
+    Route::put('products/{product}', 'ProductsController@update');
+    Route::delete('products/{product}', 'ProductsController@delete');
+
+    Route::get('customers', 'CustomersController@index');
+    Route::get('customers/{customer}', 'CustomersController@show');
+    Route::post('customers', 'CustomersController@store');
+    Route::put('customers/{customer}', 'CustomersController@update');
+    Route::delete('customers/{customer}', 'CustomersController@delete');
+
+});
